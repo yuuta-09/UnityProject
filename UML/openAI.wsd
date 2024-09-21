@@ -1,0 +1,64 @@
+@startuml
+skinparam ClassAttributeIconSize 0
+
+class EnvManager <<Singleton>> {
+    -- fields --
+    {static} - 　OpenAIKeyName: string
+    - 　_envFilePath: string
+    {static} + 　_instance: EnvManager
+    + 　EnvInfo: Dictionary<string, string>
+
+    -- methods --
+    {static} + 　GetInstance(): EnvManager
+    - 　LoadJsonFromFile(): JObject
+    - 　SetApiInfo(): void
+    
+    -- constructor --
+    + 　EnvManager(): _instance
+}
+
+note left of EnvManager::_instance
+    This field Start with 「 _ 」.
+end note
+
+class ChatCompletion {
+    -- fields --
+    - 　_apiUrl: string
+    + 　ModelType: ModelTypes
+    + 　Messages: JArray
+
+    -- methods --
+    - 　CreateJsonRequest(string apiKey): UnityWebRequest
+    - 　ModelTypeToString(ModelTypes model): string
+    - 　RoleTypeToString(RoleTypes role): string
+    + 　ResetMessages(): void
+    + 　AddMessage(RoleTypes role, string contnet): void
+    + 　SendRequest(string apiKey): Task<string>
+}
+
+note left of ChatCompletion::Messages
+    Only can get access from other classes.
+end note
+
+note right of ChatCompletion::SendRequest
+    This is async method.
+end note
+
+enum ModelTypes {
+    GPT_4o
+    GPT_4o_mini
+}
+note right of ModelTypes
+    This is defined at ChatCompletion
+end note
+ChatCompletion -- ModelTypes
+
+enum RoleTypes {
+    System
+    User
+}
+note left of RoleTypes
+    This is defined at ChatCompletion
+end note
+ChatCompletion -- RoleTypes
+@enduml
